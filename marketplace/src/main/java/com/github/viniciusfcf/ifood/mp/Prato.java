@@ -8,6 +8,7 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
+import io.vertx.mutiny.sqlclient.Tuple;
 
 public class Prato {
 
@@ -21,11 +22,25 @@ public class Prato {
 	
 	public BigDecimal preco;
 
-	public static Multi<PratoDTO> findAll(PgPool pgPool) {
-		Uni<RowSet<Row>> preparedQuery = (Uni<RowSet<Row>>) pgPool.preparedQuery("select * from prato");
-		return preparedQuery.onItem().transformToMulti(rowSet -> Multi.createFrom().items(() -> {
-			return StreamSupport.stream(rowSet.spliterator(), false);		
-		})).onItem().transform(PratoDTO::from);
+	public static Multi<PratoDTO> findAll(PgPool prato) {
+		Uni<RowSet<Row>> preparedQuery = (Uni<RowSet<Row>>) prato.preparedQuery("select * from prato ").execute();// Colocar o Execute no final se não da erro 500
+		return UniToMulti(preparedQuery);
+	}
+	
+	public static Multi<PratoDTO> findAll(PgPool client,Long idRestaurante) {
+		Uni<RowSet<Row>> preparedQuery = 
+				(Uni<RowSet<Row>>) client.preparedQuery("select * from prato "
+						+ "where prato.restaurante_id = $1 ORDER BY nome ASC")
+				.execute(Tuple.of(idRestaurante)); //Tuple colocar depois do execute
+		return UniToMulti(preparedQuery);
+	}
+
+	private static Multi<PratoDTO> UniToMulti(Uni<RowSet<Row>> queryResult) {
+		return queryResult.onItem()
+				.transformToMulti(set -> Multi.createFrom().items(() -> {
+					return StreamSupport.stream(set.spliterator(), false);
+				}))
+				.onItem().transform(PratoDTO::from); // Colocar o transform no lugar do apply
 	}
 	
 }

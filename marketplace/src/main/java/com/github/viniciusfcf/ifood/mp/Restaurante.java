@@ -1,7 +1,6 @@
 package com.github.viniciusfcf.ifood.mp;
 
 public class Restaurante {
-
 	
 	public Long id;
 	

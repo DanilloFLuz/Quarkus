@@ -49,4 +49,15 @@ services:
       image: grafana/grafana:8.5.3
       ports:
          - "3000:3000"
+         
+   artemis_ifood:
+      container_name: artemis_ifood
+      image: vromero/activemq-artemis:2.16.0
+      environment:
+         ARTEMIS_USERNAME: admin
+         ARTEMIS_PASSWORD: admin
+      ports:
+         - "8161:8161"
+         - "61613:61613"
+         - "5672:5672"
    

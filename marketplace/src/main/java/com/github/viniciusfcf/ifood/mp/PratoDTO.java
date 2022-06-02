@@ -12,15 +12,16 @@ public class PratoDTO {
 	
 	public String descricao;
 	
+	public Restaurante restaurante;
+	
 	public BigDecimal preco;
 	
 	public static PratoDTO from(Row row) {
-		PratoDTO dto = new PratoDTO();
-		dto.descricao = row.getString("descricao");
-		dto.nome = row.getString("nome");
-		dto.id = row.getLong("id");
-		dto.preco = row.getBigDecimal("preco");
-		
-		return dto;
-	}
+        PratoDTO dto = new PratoDTO();
+        dto.descricao = row.getString("descricao");
+        dto.nome = row.getString("nome");
+        dto.id = row.getLong("id");
+        dto.preco = row.getBigDecimal("preco");
+        return dto;
+    }
 }
