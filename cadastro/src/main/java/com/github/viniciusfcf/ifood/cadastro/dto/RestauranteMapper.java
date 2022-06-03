@@ -13,7 +13,7 @@ public interface RestauranteMapper {
 	@Mapping(target = "id",ignore= true)
 	@Mapping(target = "dataCriacao",ignore= true)
 	@Mapping(target = "dataAtualizacao",ignore= true)
-	@Mapping(target = "localizacao",ignore= true)
+	@Mapping(target = "localizacao.id",ignore= true)
 	public Restaurante toRestaurante(AdicionarRestauranteDTO dto);
 	
 	@Mapping(target = "nome",source = "nomeFantasia")

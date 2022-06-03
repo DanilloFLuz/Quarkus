@@ -35,6 +35,8 @@ import com.github.viniciusfcf.ifood.cadastro.dto.RestauranteDTO;
 import com.github.viniciusfcf.ifood.cadastro.dto.RestauranteMapper;
 import com.github.viniciusfcf.ifood.cadastro.infra.ConstraintViolationResponse;
 
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
@@ -68,7 +70,11 @@ public class RestauranteResource {
 	
 	@Inject
 	@Channel("restaurantes")
-	Emitter<String> emitter;
+	Emitter<Restaurante> emitter;
+	
+	@Inject
+    @Claim(standard = Claims.sub)
+    String sub;
 
 	@GET
 	//Colocar nomes para não dar conflitos
@@ -88,12 +94,13 @@ public class RestauranteResource {
 	@APIResponse(responseCode = "400", content = @Content(schema = @Schema(allOf = ConstraintViolationResponse.class)))
 	public Response adicionar(@Valid AdicionarRestauranteDTO dto) {
 		Restaurante restaurante = restauranteMapper.toRestaurante(dto);
+		restaurante.proprietario = sub;
 		restaurante.persist();
 		
-		Jsonb create = JsonbBuilder.create();
-		String json = create.toJson(restaurante);
+		//Jsonb create = JsonbBuilder.create();
+		//String json = create.toJson(restaurante);
 		
-		emitter.send(json);
+		emitter.send(restaurante);
 		return Response.status(Status.CREATED).build();
 	}
 

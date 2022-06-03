@@ -1,7 +1,10 @@
 package com.github.viniciusfcf.ifood.mp;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.StreamSupport;
+
+import com.github.viniciusfcf.ifood.mp.dto.PratoDTO;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -42,6 +45,12 @@ public class Prato {
 				}))
 				.onItem().transform(PratoDTO::from); // Colocar o transform no lugar do apply
 	}
+
+	public static Uni<PratoDTO> findById(PgPool client, Long id) {
+        return client.preparedQuery("SELECT * FROM prato WHERE id = $1").execute(Tuple.of(id))
+                .map(RowSet::iterator)
+                .map(iterator -> iterator.hasNext() ? PratoDTO.from(iterator.next()) : null);
+    }
 	
 }
  
